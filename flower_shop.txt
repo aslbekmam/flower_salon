@@ -1,0 +1,128 @@
+CREATE DATABASE flower_shop;
+USE flower_shop;
+
+CREATE TABLE customers (
+customer_id INT AUTO_INCREMENT PRIMARY KEY,
+full_name VARCHAR(255),
+birthday DATE,
+phone VARCHAR(20),
+email VARCHAR(255),
+registration_date DATE,
+source_c VARCHAR(50),
+password VARCHAR(255));
+
+CREATE TABLE employees (
+employee_id INT AUTO_INCREMENT PRIMARY KEY,
+full_name VARCHAR(255),
+position VARCHAR(100),
+phone VARCHAR(20),
+email VARCHAR(255),
+hire_date DATE,
+password VARCHAR(255));
+
+CREATE TABLE product_categories (
+category_id INT AUTO_INCREMENT PRIMARY KEY,
+category_name VARCHAR(100),
+description TEXT);
+
+CREATE TABLE products (
+product_id INT AUTO_INCREMENT PRIMARY KEY,
+category_id INT,
+product_name VARCHAR(255),
+description TEXT,
+price DECIMAL(10, 2),
+unit VARCHAR(50),
+photo_url VARCHAR(255),
+FOREIGN KEY (category_id) REFERENCES product_categories(category_id));
+
+CREATE TABLE orders (
+order_id INT AUTO_INCREMENT PRIMARY KEY,
+customer_id INT,
+employee_responsible_id INT,
+order_date DATETIME,
+delivery_date DATE,
+delivery_time_from TIME,
+delivery_time_to TIME,
+delivery_address VARCHAR(255),
+status VARCHAR(50),
+total_amount DECIMAL(10, 2),
+payment_method VARCHAR(50),
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+FOREIGN KEY (employee_responsible_id) REFERENCES employees(employee_id));
+
+CREATE TABLE order_items (
+order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+order_id INT,
+product_id INT,
+quantity INT,
+price_per_unit DECIMAL(10, 2),
+FOREIGN KEY (order_id) REFERENCES orders(order_id),
+FOREIGN KEY (product_id) REFERENCES products(product_id));
+
+CREATE TABLE floral_compositions (
+composition_id INT AUTO_INCREMENT PRIMARY KEY,
+composition_name VARCHAR(255),
+description TEXT,
+price DECIMAL(10, 2),
+photo_url VARCHAR(255));
+
+CREATE TABLE composition_items (
+composition_item_id INT AUTO_INCREMENT PRIMARY KEY,
+composition_id INT,
+product_id INT,
+quantity INT,
+FOREIGN KEY (composition_id) REFERENCES floral_compositions(composition_id),
+FOREIGN KEY (product_id) REFERENCES products(product_id));
+
+CREATE TABLE inventory (
+product_id INT,
+quantity_in_stock INT,
+min_quantity_threshold INT,
+last_restock_date DATE,
+FOREIGN KEY (product_id) REFERENCES products(product_id));
+
+
+INSERT INTO customers (full_name, birthday, phone, email, registration_date, source_c, password)
+VALUES ('Иванов Иван Иванович', '1985-05-15', '79150001122', 'ivanov@mail.ru', '2023-01-12', 'Реклама', 'pass123'),
+('Петров Сергей Олегович', '1990-08-22', '79160004567', 'petrov@mail.ru', '2023-03-08', 'Сайт', 'pass456'),
+('Сидорова Анна Петровна', '1980-11-30', '79170007890', 'sidorova@mail.ru', '2024-02-15', 'Рекомендация', 'pass789');
+
+INSERT INTO employees (full_name, position, phone, email, hire_date, password)
+VALUES ('Кузнецов Алексей Николаевич', 'Менеджер', '79151112233', 'kuznetsov@flower.ru', '2020-04-01', 'mngpass123'),
+('Смирнова Мария Сергеевна', 'Флорист', '79153334455', 'smirnova@flower.ru', '2021-06-15', 'flopass456'),
+('Попов Дмитрий Иванович', 'Кассир', '79156667788', 'popov@flower.ru', '2022-09-10', 'cashpass789');
+
+INSERT INTO product_categories (category_name, description)
+VALUES ('Цветы', 'Свежесрезанные цветы'),
+('Горшечные растения', 'Растения в горшках для дома и офиса'),
+('Букеты', 'Готовые букеты для различных случаев');
+
+INSERT INTO products (category_id, product_name, description, price, unit, photo_url)
+VALUES (1, 'Роза', 'Красные розы, 50 см', 150.00, 'шт', 'rose.jpg'),
+(2, 'Фикус', 'Фикус Бенджамина, 100 см', 1500.00, 'шт', 'ficus.jpg'),
+(3, 'Букет Любовь', 'Букет из красных роз', 2500.00, 'шт', 'bouquet_love.jpg');
+
+INSERT INTO orders (customer_id, employee_responsible_id, order_date, delivery_date, delivery_time_from, delivery_time_to, delivery_address, status, total_amount, payment_method)
+VALUES (1, 1, '2024-03-01 10:00:00', '2024-03-02', '12:00:00', '14:00:00', 'ул. Ленина, д. 10', 'Завершен', 2500.00, 'Карта'),
+(2, 2, '2024-03-02 11:00:00', '2024-03-03', '13:00:00', '15:00:00', 'ул. Пушкина, д. 25', 'В обработке', 1500.00, 'Наличные'),
+(3, 3, '2024-03-03 12:00:00', '2024-03-04', '14:00:00', '16:00:00', 'ул. Горького, д. 30', 'Отменен', 150.00, 'Карта');
+
+INSERT INTO order_items (order_id, product_id, quantity, price_per_unit)
+VALUES (1, 3, 1, 2500.00),
+(2, 2, 1, 1500.00),
+(3, 1, 1, 150.00);
+
+INSERT INTO floral_compositions (composition_name, description, price, photo_url)
+VALUES ('Романтика', 'Букет из красных роз и белых лилий', 3500.00, 'romance.jpg'),
+('Весна', 'Букет из тюльпанов и нарциссов', 2000.00, 'spring.jpg'),
+('Лето', 'Букет из разноцветных летних цветов', 2500.00, 'summer.jpg');
+
+INSERT INTO composition_items (composition_id, product_id, quantity)
+VALUES (1, 1, 10),
+(2, 1, 5),
+(3, 3, 1);
+
+INSERT INTO inventory (product_id, quantity_in_stock, min_quantity_threshold, last_restock_date)
+VALUES (1, 50, 10, '2024-03-01'),
+(2, 20, 5, '2024-03-02'),
+(3, 15, 3, '2024-03-03');
